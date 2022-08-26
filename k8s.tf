@@ -1,16 +1,16 @@
 resource "kubernetes_namespace" "example" {
   metadata {
-    name = "k8s-nginx-minikube-tf"
+    name = "k8s-wordpress-minikube-tf"
   }
 }
 
 resource "kubernetes_deployment" "example" {
   metadata {
-    name = "nginx-deployment"
+    name = "wordpress-deployment"
     labels = {
-      app = "nginxApp"
+      app = "wordpressApp"
     }
-    namespace = "k8s-nginx-minikube-tf"
+    namespace = "k8s-wordpress-minikube-tf"
   }
 
   spec {
@@ -18,21 +18,21 @@ resource "kubernetes_deployment" "example" {
 
     selector {
       match_labels = {
-        app = "nginxApp"
+        app = "wordpressApp"
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "nginxApp"
+          app = "wordpressApp"
         }
       }
 
       spec {
         container {
-          image = "nginxinc/nginx-unprivileged:latest"
-          name  = "nginx"
+          image = "wordpressinc/wordpress-unprivileged:latest"
+          name  = "wordpress"
 
           resources {
             limits = {
@@ -49,13 +49,13 @@ resource "kubernetes_deployment" "example" {
     }
   }
 }
-resource "kubernetes_service" "nginx-service-np" {
+resource "kubernetes_service" "wordpress-service-np" {
   metadata {
-    name = "nginx-service-np"
+    name = "wordpress-service-np"
   } 
   spec {
     selector = {
-      app = "nginxApp"
+      app = "wordpressApp"
     } 
     session_affinity = "ClientIP"
     port {
@@ -73,7 +73,7 @@ resource "kubernetes_pod_disruption_budget" "k8s-pdb-2" {
     minAvailable = 2
     selector {
       match_labels = {
-        app = "nginxApp"
+        app = "wordpressApp"
       }
     }
   }
@@ -89,7 +89,7 @@ resource "kubernetes_horizontal_pod_autoscaler" "example" {
 
     scale_target_ref {
       kind = "Deployment"
-      name = "nginxApp"
+      name = "wordpressApp"
     }
   }
 }
